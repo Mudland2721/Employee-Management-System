@@ -70,7 +70,6 @@ viewAll = () => {
     //show table in console then return to main menu    
     connection.query(allQuery, function (err, res) {
       if (err) throw err;
-      console.log('OH LORD------------------------------', res);
 
       console.table(res);
       startSearch();
@@ -80,33 +79,45 @@ viewAll = () => {
 //function for kill app
   exitConsole = () => {
     revert;
+    connection.end();
   };
 
 //function for show all emp by managers 
-    async function employeeByManager() {
-      // clear console then reRender
-    revert;
-    let manager = await connection.query("SELECT * FROM employee");
-    let mangersSelection = manager.map(({id, first_name, last_name}) => ({
+employeeByManager = () => {
+    //show table in console then return to main menu    
+    connection.query("SELECT * FROM employee;", function (err, res) {
+        //was running query and next line was mapping the query before query finished, i was running map on a query object -- so gave it callback
+      if (err) throw err;
 
-        name: first_name.concat(" ", last_name), 
-        value: id,
+      console.table(res.map(({id, first_name, last_name}) => ({
 
-    }));
+            name: first_name.concat(" ", last_name), 
+            value: id,
+    
+        })));
+      startSearch();
+    });
+  };
+    // let mangersSelection = manager.map(({id, first_name, last_name}) => ({
+
+    //     name: first_name.concat(" ", last_name), 
+    //     value: id,
+
+    // }));
 
     
-    //specific manager Id for follow up prompt
-    let { userManagerId } = inquirer.prompt([
-        {
-            type: "list",
-            message: "Which employee Manager would you like to view?",
-            name: 'userManagerId',
-            choices: mangersSelection
-        }
-    ]);
+    // specific manager Id for follow up prompt
+    // let { userManagerId } = inquirer.prompt([
+    //     {
+    //         type: "list",
+    //         message: "Which employee Manager would you like to view?",
+    //         name: 'userManagerId',
+    //         choices: mangersSelection
+    //     }
+    // ]);
 
-    let employees = await connection.query(allQuery, + "WHERE role.id;", userManagerId);
+    // let employees = await connection.query(allQuery, + "WHERE role.id;", userManagerId);
 
-    console.table(employees);
-    startSearch();
-}
+    // console.table(employees);
+    // startSearch();
+
