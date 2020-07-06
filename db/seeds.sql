@@ -4,9 +4,9 @@ INSERT INTO department
 VALUES
     ("Management"),
     ("Engineering"),
-    ("Quality Assurance"),
+    ("VPs"),
     ("Sales"),
-    ("Tech Support");
+    ("Asset");
 INSERT INTO role
     (title, salary, department_id)
 VALUES

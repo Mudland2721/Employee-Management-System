@@ -17,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/Mudland2721/Employee-Management-System/issues"
   },
-  "homepage": "https://github.com/Mudland2721/Employee-Management-System#readme"
+  "homepage": "https://github.com/Mudland2721/Employee-Management-System#readme",
+  "dependencies": {
+    "console-clear": "^1.1.1",
+    "console.table": "^0.10.0"
+  }
 }

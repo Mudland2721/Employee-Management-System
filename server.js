@@ -3,7 +3,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const console_table = require("console.table");
 const clear = require("console-clear");
-
+const allQuery = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name, concat(manager.first_name," ",manager.last_name) as manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee as manager on employee.manager_id = manager.id';
 //connection pretences 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -68,11 +68,16 @@ function startSearch() {
                 break;
         }       
     })
-}
+} startSearch();
 
 //function for all emp
 viewAll = () => {
     //show table in console then return to main menu
-    let all = "SELECT * FROM employees_db.employee;"
     
-}
+    connection.query(allQuery, function(err, res) {
+        if (err) throw err;
+        console_table(res.allQuery);
+    })
+    startSearch();
+    
+};
