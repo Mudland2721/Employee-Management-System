@@ -3,6 +3,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const console_table = require("console.table");
 const clear = require("console-clear");
+const { async } = require("rxjs/internal/scheduler/async");
 const allQuery = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name, concat(manager.first_name," ",manager.last_name) as manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee as manager on employee.manager_id = manager.id';
 //connection pretences 
 const connection = mysql.createConnection({
@@ -13,17 +14,17 @@ const connection = mysql.createConnection({
     database: "employees_DB",
   });
 
-  //Data base connection 
-  connection.connect(function(err) {
-    //check for an error 
-    if (err) throw err;
+//   //Data base connection 
+//   connection.connect(function(err) {
+//     //check for an error 
+//     if (err) throw err;
   
-    //log message to console if connect was successful 
-    console.log("connected as id " + connection.threadId);
+//     //log message to console if connect was successful 
+//     console.log("connected as id " + connection.threadId);
   
-    //Once we are done connecting to the database end the connection (so people cannot get into it)
-    connection.end();
-  });
+//     //Once we are done connecting to the database end the connection (so people cannot get into it)
+//     connection.end();
+//   });
 
 // start of app
 function startSearch() {
@@ -45,6 +46,7 @@ function startSearch() {
         switch (res.action) {
             case 'View all Employees':
                 //function for this ()
+                viewAll();
                 break;
 
             case 'View all Employees by Manager':
@@ -73,11 +75,11 @@ function startSearch() {
 //function for all emp
 viewAll = () => {
     //show table in console then return to main menu
-    
-    connection.query(allQuery, function(err, res) {
-        if (err) throw err;
-        console_table(res.allQuery);
-    })
-    startSearch();
-    
-};
+    console.log("viewAll occurred");
+    connection.query(allQuery, function (err, res) {
+      if (err) throw err;
+      console.log('OH LORD------------------------------', res);
+      console.table(res.allQuery);
+      startSearch();
+    });
+  };
