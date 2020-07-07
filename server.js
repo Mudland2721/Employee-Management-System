@@ -3,115 +3,155 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const console_table = require("console.table");
 const revert = require("console-clear");
-const allQuery = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name, concat(manager.first_name," ",manager.last_name) as manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee as manager on employee.manager_id = manager.id';
-//connection pretences 
+const allQuery =
+  'SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name, concat(manager.first_name," ",manager.last_name) as manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee as manager on employee.manager_id = manager.id';
+//connection pretences
 const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "Emme2721",
-    database: "employees_DB",
-  });
+  host: "localhost",
+  port: 3306,
+  user: "root",
+  password: "Emme2721",
+  database: "employees_DB",
+});
 
 // start of app
 function startSearch() {
-    inquirer.
-    prompt({
-        name: 'action',
-        type: 'list',
-        message: 'What would you like done?',
-        choices: [
-            'View all Employees',
-            'View all Employees by Manager',
-            'View all Employees by department',
-            'Add Employee',
-            'Add Employee role',
-            'Add Employee department',
-            'Exit',
-        ],
-    }).then(function(res) {
-        switch (res.action) {
-            case 'View all Employees':
-                //function for this ()
-                viewAll();
-                break;
-
-            case 'View all Employees by Manager':
-                //function for this ()
-                employeeByManager();
-                break;
-
-            case 'View all Employees by department':
-                //function for this ()
-                break;
-            
-            case 'Add Employee':
-                //function for this ()
-                break;
-
-            case 'Add Employee role':
-                //function for this ()
-                break;
-
-            case 'Add Employee department':
-                //function for this ()
-                break;
-
-            case 'Exit':
-                //function for this ()
-                exitConsole();
-                break;
-        }       
+  inquirer
+    .prompt({
+      name: "action",
+      type: "list",
+      message: "What would you like done?",
+      choices: [
+        "View all Employees",
+        "View all Employees by Manager",
+        "View all Employees by department",
+        "Add Employee",
+        "Add Employee role",
+        "Add Employee department",
+        "Exit",
+      ],
     })
-} startSearch();
+    .then(function (res) {
+      switch (res.action) {
+        case "View all Employees":
+          //function for this ()
+          viewAll();
+          break;
+
+        case "View all Employees by Manager":
+          //function for this ()
+          employeeByManager();
+          break;
+
+        case "View all Employees by department":
+          //function for this ()
+          employeeByDepartment();
+          break;
+
+        case "Add Employee":
+          //function for this ()
+          break;
+
+        case "Add Employee role":
+          //function for this ()
+          break;
+
+        case "Add Employee department":
+          //function for this ()
+          break;
+
+        case "Exit":
+          //function for this ()
+          exitConsole();
+          break;
+      }
+    });
+}
+startSearch();
 
 //function for all emp
 viewAll = () => {
-    //show table in console then return to main menu    
-    connection.query(allQuery, function (err, res) {
-      if (err) throw err;
+  //show table in console then return to main menu
+  connection.query(allQuery, function (err, res) {
+    if (err) throw err;
 
-      console.table(res);
-      startSearch();
-    });
-  };
+    console.table(res);
+    startSearch();
+  });
+};
 
 //function for kill app
-  exitConsole = () => {
-    revert;
-    connection.end();
-  };
+exitConsole = () => {
+  revert;
+  connection.end();
+};
 
-//function for show all emp by managers 
+//function for show all emp by managers
+// function deploys but it exists function after ran -----------------------------------------------------------------------------------------------------
 employeeByManager = () => {
-    //show table in console then return to main menu    
-    connection.query("SELECT * FROM employee;", function (err, res) {
-        //was running query and next line was mapping the query before query finished, i was running map on a query object -- so gave it callback
+  //show table in console then return to main menu
+  connection.query("SELECT * FROM employee;", function (err, res) {
+    //was running query and next line was mapping the query before query finished, i was running map on a query object -- so gave it callback
+    if (err) throw err;
+    let mangersSelection = res.map(({ id, first_name, last_name }) => ({
+      name: first_name.concat(" ", last_name),
+      value: id,
+    }));
 
-      if (err) throw err;
+    //  specific manager Id for follow up prompt
+    let { userManagerId } = inquirer.prompt([
+      {
+        type: "list",
+        message: "Which employee Manager would you like to view?",
+        name: "userManagerId",
+        choices: mangersSelection,
+      },
+    ]);
+    //query for employee search
+    let employees = connection.query(
+      allQuery,
+      +"WHERE role.id =?;",
+      userManagerId
+    );
+    console.log("\n");
+    console.table(employees);
+    startSearch();
+  });
+};
+//function for displaying all employees by department
+employeeByDepartment = () => {
+  revert();
 
-        let mangersSelection = (res.map(({id, first_name, last_name}) => ({
-
-            name: first_name.concat(" ", last_name), 
-            value: id,
-    
-        })));
-
-        //  specific manager Id for follow up prompt
-             let { userManagerId } = inquirer.prompt([
-          {
-            type: "list",
-            message: "Which employee Manager would you like to view?",
-            name: 'userManagerId',
-            choices: mangersSelection
-          }
-          ]);
-            let employees = connection.query(allQuery, + "WHERE role.id;", userManagerId);
-
-      console.table(employees);
-
-      startSearch();
+  connection.query("SELECT * FROM department;", function (err, res) {
+    if (err) throw err;
+    // console.log(res);
+    let newArr = res.map((department) => {
+      return {
+        name: department.department_name,
+        value: department.id,
+      };
     });
-  };
+  
+    const departmentChoice = inquirer
+      .prompt({
+        name: "action",
+        type: "list",
+        message: "Which department would you like to view?",
+        choices: newArr,
+      })
+      .then((res, err) => {
+        if (err) throw err;
+        console.log(res);
+        // connection.query(allQuery + "WHERE department_id =?", DepartmentId);
+      });
 
+   
+    
+  });
+};
 
+//sync is will do this and then this, 1 then, 2 then, 3.. 
+
+//node is syc single threaded 
+
+//async will do it all at once - will return when done 
