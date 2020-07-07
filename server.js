@@ -125,33 +125,35 @@ employeeByDepartment = () => {
   connection.query("SELECT * FROM department;", function (err, res) {
     if (err) throw err;
     // console.log(res);
-    let newArr = res.map((department) => {
+    let departmentArr = res.map((department) => {
       return {
         name: department.department_name,
         value: department.id,
       };
     });
-  
+
     const departmentChoice = inquirer
       .prompt({
         name: "action",
         type: "list",
         message: "Which department would you like to view?",
-        choices: newArr,
+        choices: departmentArr,
       })
       .then((res, err) => {
         if (err) throw err;
         console.log(res);
-        // connection.query(allQuery + "WHERE department_id =?", DepartmentId);
+        viewDepartment();
       });
 
-   
+    viewDepartment = () => {
+      connection.query(allQuery + " WHERE department.id = ?;", departmentChoice);
+    };
     
   });
 };
 
-//sync is will do this and then this, 1 then, 2 then, 3.. 
+//sync is will do this and then this, 1 then, 2 then, 3..
 
-//node is syc single threaded 
+//node is syc single threaded
 
-//async will do it all at once - will return when done 
+//async will do it all at once - will return when done
