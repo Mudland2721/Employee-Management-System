@@ -146,14 +146,16 @@ employeeByDepartment = () => {
       });
 
     viewDepartment = () => {
-      connection.query(allQuery + " WHERE department.id = ?;", departmentChoice);
+      connection.query(
+        allQuery + " WHERE department.id = ?;",
+        departmentChoice
+      );
+      // getting error for syntax error for mySQL
+      //sync is will do this and then this, 1 then, 2 then, 3..
+
+      //node is syc single threaded
+
+      //async will do it all at once - will return when done
     };
-    
   });
-};
 
-//sync is will do this and then this, 1 then, 2 then, 3..
-
-//node is syc single threaded
-
-//async will do it all at once - will return when done
