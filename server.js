@@ -141,21 +141,27 @@ employeeByDepartment = () => {
       })
       .then((res, err) => {
         if (err) throw err;
-        console.log(res);
-        viewDepartment();
+        viewDepartment(res.action);
+     
       });
 
-    viewDepartment = () => {
+    viewDepartment = (dep_id) => {
       connection.query(
         allQuery + " WHERE department.id = ?;",
-        departmentChoice
+        dep_id, function (err, res) {
+          if (err) throw err;
+          console.log("\n");
+          console.table(res);
+          startSearch();
+        }
       );
-      // getting error for syntax error for mySQL
-      //sync is will do this and then this, 1 then, 2 then, 3..
-
-      //node is syc single threaded
-
-      //async will do it all at once - will return when done
     };
   });
+
+  
+
+};
+
+
+
 
