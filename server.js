@@ -97,7 +97,6 @@ employeeByManager = () => {
       name: first_name.concat(" ", last_name),
       value: id,
     }));
-
     //  specific manager Id for follow up prompt
     let { userManagerId } = inquirer.prompt([
       {
@@ -142,13 +141,13 @@ employeeByDepartment = () => {
       .then((res, err) => {
         if (err) throw err;
         viewDepartment(res.action);
-     
       });
 
     viewDepartment = (dep_id) => {
       connection.query(
         allQuery + " WHERE department.id = ?;",
-        dep_id, function (err, res) {
+        dep_id,
+        function (err, res) {
           if (err) throw err;
           console.log("\n");
           console.table(res);
@@ -157,11 +156,65 @@ employeeByDepartment = () => {
       );
     };
   });
-
-  
-
 };
 
+addEmployee = () => {
+  revert();
+  connection.query("SELECT * FROM role", function (err, res) {
+    if (err) throw err;
 
+    let options = res.map(({ roles }) => {
+      return {
+        name: "title",
+        value: "id",
+      };
+    });
+  });
 
+  connection.query("SELECT * FROM employee", function (err, res) {
+    if (err) throw err;
 
+    let managerOptions = res.map(({ manager }) => ({
+      name: "first_name".concat(" ", "last_name"),
+      value: "id",
+    }));
+  });
+
+  inquirer
+    .prompt([
+      {
+        name: "first_name",
+        message: "What is the employees first name?",
+      },
+      {
+        name: "last_name",
+        message: "What is the employees last name?",
+      },
+      {
+        type: "list",
+        message: "Whats the employees role here?",
+        name: "role_id",
+        choices: options,
+      },
+      {
+        type: "list",
+        message: "Who is this employees Manager?",
+        name: "manager_id",
+        choices: managerOptions,
+      },
+    ])
+    .then((res) => {
+      //make connection INSERT
+      return connection.query("INSERT INTO employee SET ?", res);
+    })
+    .then((err, res) => {
+      if (err) throw err;
+      //make connection SELECT
+      return connection.query("SELECT * FROM role");
+    })
+    .then((role) => {
+      //Show result then reRun
+      console.table(role);
+      startSearch();
+    });
+};
