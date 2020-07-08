@@ -50,6 +50,7 @@ function startSearch() {
 
         case "Add Employee":
           //function for this ()
+          addEmployee();
           break;
 
         case "Add Employee role":
@@ -162,22 +163,24 @@ addEmployee = () => {
   revert();
   connection.query("SELECT * FROM role", function (err, res) {
     if (err) throw err;
-
-    let options = res.map(({ roles }) => {
-      return {
-        name: "title",
-        value: "id",
-      };
-    });
+    console.log(res);
+    //returning object with the data needed needs to be handled there after 
   });
+
+  let options = res.map(({ roles }) => {
+    return {
+      name: "title",
+      value: "id",
+    };
+  });
+
+  let managerOptions = res.map(({ manager }) => ({
+    name: "first_name".concat(" ", "last_name"),
+    value: "id",
+  }));
 
   connection.query("SELECT * FROM employee", function (err, res) {
     if (err) throw err;
-
-    let managerOptions = res.map(({ manager }) => ({
-      name: "first_name".concat(" ", "last_name"),
-      value: "id",
-    }));
   });
 
   inquirer
