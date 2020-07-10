@@ -34,17 +34,15 @@ function startSearch() {
     .then(function (res) {
       switch (res.action) {
         case "View all Employees":
-          //function for this ()
           viewAll();
           break;
 
         case "View all Employees by Manager":
-          //function for this ()
+          //function for this () ------------------
           employeeByManager();
           break;
 
         case "View all Employees by department":
-          //function for this ()
           employeeByDepartment();
           break;
 
@@ -154,6 +152,7 @@ employeeByDepartment = () => {
           if (err) throw err;
           console.log("\n");
           console.table(res);
+          console.log("\n");
           startSearch();
         }
       );
@@ -165,63 +164,63 @@ addEmployee = () => {
   revert();
   connection.query("SELECT * FROM role", function (err, res) {
     if (err) throw err;
-    console.log(res);
     //returning object with the data needed needs to be handled there after
-  });
 
-  let options = res.map(({ roles }) => {
-    return {
-      name: "title",
-      value: "id",
-    };
-  });
-
-  let managerOptions = res.map(({ manager }) => ({
-    name: "first_name".concat(" ", "last_name"),
-    value: "id",
-  }));
-
-  connection.query("SELECT * FROM employee", function (err, res) {
-    if (err) throw err;
-  });
-
-  inquirer
-    .prompt([
-      {
-        name: "first_name",
-        message: "What is the employees first name?",
-      },
-      {
-        name: "last_name",
-        message: "What is the employees last name?",
-      },
-      {
-        type: "list",
-        message: "Whats the employees role here?",
-        name: "role_id",
-        choices: options,
-      },
-      {
-        type: "list",
-        message: "Who is this employees Manager?",
-        name: "manager_id",
-        choices: managerOptions,
-      },
-    ])
-    .then((res) => {
-      //make connection INSERT
-      return connection.query("INSERT INTO employee SET ?", res);
-    })
-    .then((err, res) => {
-      if (err) throw err;
-      //make connection SELECT
-      return connection.query("SELECT * FROM role");
-    })
-    .then((role) => {
-      //Show result then reRun
-      console.table(role);
-      startSearch();
+    let options = res.map(({ id, title }) => {
+      return {
+        name: title,
+        value: id,
+      };
     });
+
+    let managerOptions = res.map(({ id, first_name, last_name }) => ({
+      name: first_name,
+      name: last_name,
+      value: id,
+    }));
+
+    connection.query("SELECT * FROM employee", function (err, res) {
+      if (err) throw err;
+
+      inquirer
+        .prompt([
+          {
+            name: "first_name",
+            message: "What is the employees first name?",
+          },
+          {
+            name: "last_name",
+            message: "What is the employees last name?",
+          },
+          {
+            type: "list",
+            message: "Whats the employees role here?",
+            name: "role_id",
+            choices: options,
+          },
+          {
+            type: "list",
+            message: "Who is this employees Manager?",
+            name: "manager_id",
+            choices: managerOptions,
+          },
+        ])
+        .then((noobie) => {
+          return (
+            connection.query("INSERT INTO employee SET ?", noobie),
+            connection.query(allQuery + ";")
+            //UnhandledPromiseRejectionWarning: TypeError: Cannot convert object to primitive value
+          );
+        })
+        .then((role) => {
+          //Show result then reRun
+          console.log("\n");
+          console.table(role);
+          console.log("\n");
+          startSearch();
+        });
+    });
+  });
 };
 
 addRole = () => {
@@ -276,6 +275,7 @@ addEmployeeDepartment = () => {
     .then((department) => {
       console.log("\n");
       console.table(department);
+      console.log("\n");
       startSearch();
     });
 };
