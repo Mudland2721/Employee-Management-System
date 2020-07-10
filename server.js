@@ -60,6 +60,7 @@ function startSearch() {
 
         case "Add Employee department":
           //function for this ()
+          addEmployeeDepartment();
           break;
 
         case "Exit":
@@ -227,16 +228,13 @@ addRole = () => {
   revert();
   connection.query("SELECT * FROM department", function (err, res) {
     if (err) throw err;
-    console.log(res);
-    console.log("HERE WE GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-
     //arr mapping
     let departmentSelection = res.map(({ id, department_name }) => ({
       name: department_name,
       value: id,
     }));
 
-    const role = inquirer
+    inquirer
       .prompt([
         {
           name: "title",
@@ -255,16 +253,29 @@ addRole = () => {
       ])
       .then((answer) => {
         return connection.query("INSERT INTO role SET ?", answer);
-        // console.log("HERE WE GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
       })
       .then(() => {
-        return connection.query("SELECT * FROM role");
-      })
-      .then((roles) => {
-        // space out couldn't read anything
-        console.log("\n");
-        console.table(roles);
+        return connection.query("SELECT * FROM role", function (err, res) {
+          if (err) throw err;
+          console.log("\n");
+          console.table(res);
+          startSearch();
+        });
       });
   });
-  // await .db creat role then pass it into the the function createRole(what your passing)
+};
+
+addEmployeeDepartment = () => {
+  revert();
+  console.log(`HERE WE GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO`);
+  inquirer
+    .prompt({
+      name: "department_name",
+      message: "What is the new department?",
+    })
+    .then((department) => {
+      console.log("\n");
+      console.table(department);
+      startSearch();
+    });
 };
