@@ -164,7 +164,7 @@ addEmployee = () => {
   connection.query("SELECT * FROM role", function (err, res) {
     if (err) throw err;
     console.log(res);
-    //returning object with the data needed needs to be handled there after 
+    //returning object with the data needed needs to be handled there after
   });
 
   let options = res.map(({ roles }) => {
@@ -220,4 +220,45 @@ addEmployee = () => {
       console.table(role);
       startSearch();
     });
+};
+
+addRole = () => {
+  connection.query("SELECT * FROM department", function (err, res) {
+    revert();
+    if (err) throw err;
+    console.log(res);
+  });
+  let departmentSelection = res.map(({ id, department_name }) => ({
+    name: department_name,
+    value: id,
+  }));
+
+  // inquirer
+  //   .prompt([
+  //     {
+  //       name: "title",
+  //       message: "What's the name of the role you'd like to add?",
+  //     },
+  //     {
+  //       name: "salary",
+  //       message: "What is the role's salary?",
+  //     },
+  //     {
+  //       type: "list",
+  //       name: "department_id",
+  //       message: "Which department is the role under?",
+  //       choices: departmentChoices,
+  //     },
+  //   ])
+  //   .then((answer) => {
+  //     return connection.query("INSERT INTO role SET ?", answer);
+  //   })
+  //   .then(() => {
+  //     return connection.query("SELECT * FROM role");
+  //   })
+  //   .then((roles) => {
+  //     // space out couldnt read anything
+  //     console.log("\n");
+  //     console.table(roles);
+  //   });
 };
