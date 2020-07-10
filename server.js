@@ -223,47 +223,48 @@ addEmployee = () => {
     });
 };
 
-async function addRole() {
+addRole = () => {
   revert();
   connection.query("SELECT * FROM department", function (err, res) {
     if (err) throw err;
     console.log(res);
     console.log("HERE WE GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+
+    //arr mapping
+    let departmentSelection = res.map(({ id, department_name }) => ({
+      name: department_name,
+      value: id,
+    }));
+
+    const role = inquirer
+      .prompt([
+        {
+          name: "title",
+          message: "What's the name of the role you'd like to add?",
+        },
+        {
+          name: "salary",
+          message: "What is the role's salary?",
+        },
+        {
+          type: "list",
+          name: "department_id",
+          message: "Which department is the role under?",
+          choices: departmentSelection,
+        },
+      ])
+      .then((answer) => {
+        return connection.query("INSERT INTO role SET ?", answer);
+        // console.log("HERE WE GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+      })
+      .then(() => {
+        return connection.query("SELECT * FROM role");
+      })
+      .then((roles) => {
+        // space out couldn't read anything
+        console.log("\n");
+        console.table(roles);
+      });
   });
-  //arr mapping
-  let departmentSelection = res.map(({ id, department_name }) => ({
-    name: department_name,
-    value: id,
-  }));
-
-  const role = await prompt([
-    {
-      name: "title",
-      message: "What's the name of the role you'd like to add?",
-    },
-    {
-      name: "salary",
-      message: "What is the role's salary?",
-    },
-    {
-      type: "list",
-      name: "department_id",
-      message: "Which department is the role under?",
-      choices: departmentChoices,
-    },
-  ])
-    .then((answer) => {
-      return connection.query("INSERT INTO role SET ?", answer);
-      // console.log("HERE WE GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-    })
-    .then(() => {
-      return connection.query("SELECT * FROM role");
-    })
-    .then((roles) => {
-      // space out couldn't read anything
-      console.log("\n");
-      console.table(roles);
-    });
-
   // await .db creat role then pass it into the the function createRole(what your passing)
-}
+};
