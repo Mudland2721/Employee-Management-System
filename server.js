@@ -100,34 +100,36 @@ exitConsole = () => {
 };
 
 //function for show all emp by managers
-// function deploys but it exists function after ran -----------------------------------------------------------------------------------------------------
+// TypeError: Cannot convert object to primitive value -----------------------------------------------------------------------------------------------------
 employeeByManager = () => {
   //show table in console then return to main menu
   connection.query("SELECT * FROM employee;", function (err, res) {
-    //was running query and next line was mapping the query before query finished, i was running map on a query object -- so gave it callback
     if (err) throw err;
     let mangersSelection = res.map(({ id, first_name, last_name }) => ({
       name: first_name.concat(" ", last_name),
       value: id,
     }));
     //  specific manager Id for follow up prompt
-    let { userManagerId } = inquirer.prompt([
-      {
-        type: "list",
-        message: "Which employee Manager would you like to view?",
-        name: "userManagerId",
-        choices: mangersSelection,
-      },
-    ]);
-    //query for employee search
-    let employees = connection.query(
-      allQuery,
-      +"WHERE role.id =?;",
-      userManagerId
-    );
-    console.log("\n");
-    console.table(employees);
-    startSearch();
+    let { userManagerId } = inquirer
+      .prompt([
+        {
+          type: "list",
+          message: "Which employee Manager would you like to view?",
+          name: "userManagerId",
+          choices: mangersSelection,
+        },
+      ])
+      .then(() => {
+        //query for employee search
+        let employees = connection.query(
+          allQuery,
+          +"WHERE role.id =?;",
+          userManagerId
+        );
+        console.log("\n");
+        console.table(employees);
+        startSearch();
+      });
   });
 };
 //function for displaying all employees by department
