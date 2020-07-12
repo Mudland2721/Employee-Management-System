@@ -164,14 +164,34 @@ addEmployee = () => {
   revert();
   connection.query("SELECT * FROM employee", function (err, res) {
     if (err) throw err;
-    //returning object with the data needed needs to be handled there after
+    //need new connection that connects to the role table and pull data for some reason its saying the .then is not a function
+    let options = connection
+      .query("SELECT * FROM role", function (err, res) {
+        if (err) throw err;
+        res.map(({ title, id }) => {
+          return {
+            name: title,
+            value: id,
+          };
+        });
+      })
+      .then((res) => {
+        return res;
+      });
 
-    let options = res.map(({ title, id }) => {
-      return {
-        name: title,
-        value: id,
-      };
-    });
+    // let options = connection
+    //   .query("SELECT * FROM role", function (err, res) {
+    //     if (err) throw err;
+    //     res.map(({ title, id }) => {
+    //       return {
+    //         name: title,
+    //         value: id,
+    //       };
+    //     });
+    //   })
+    //   .then((res) => {
+    //     return res;
+    //   });
 
     let managerOptions = res.map(({ id, first_name, last_name }) => ({
       // name: first_name.concat(" ", last_name),
@@ -215,13 +235,6 @@ addEmployee = () => {
             startSearch()
           );
         });
-      // .then((role) => {
-      //   //Show result then reRun
-      //   console.log("\n");
-      //   console.table(role);
-      //   console.log("\n");
-      //   startSearch();
-      // });
     });
   });
 };
