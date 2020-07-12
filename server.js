@@ -14,6 +14,18 @@ const connection = mysql.createConnection({
   database: "employees_DB",
 });
 
+// async function options() {
+//   await connection.query("SELECT * FROM role", function (err, res) {
+//     if (err) throw err;
+//     res.map(({ title, id }) => {
+//       return {
+//         name: title,
+//         value: id,
+//       };
+//     });
+//   });
+// }
+
 // start of app
 function startSearch() {
   inquirer
@@ -164,77 +176,61 @@ addEmployee = () => {
   revert();
   connection.query("SELECT * FROM employee", function (err, res) {
     if (err) throw err;
-    //need new connection that connects to the role table and pull data for some reason its saying the .then is not a function
-    let options = connection
-      .query("SELECT * FROM role", function (err, res) {
-        if (err) throw err;
-        res.map(({ title, id }) => {
-          return {
-            name: title,
-            value: id,
-          };
-        });
-      })
-      .then((res) => {
-        return res;
-      });
-
-    // let options = connection
-    //   .query("SELECT * FROM role", function (err, res) {
-    //     if (err) throw err;
-    //     res.map(({ title, id }) => {
-    //       return {
-    //         name: title,
-    //         value: id,
-    //       };
-    //     });
-    //   })
-    //   .then((res) => {
-    //     return res;
-    //   });
-
     let managerOptions = res.map(({ id, first_name, last_name }) => ({
       // name: first_name.concat(" ", last_name),
       name: `${first_name} ${last_name}`,
       value: id,
     }));
-
-    connection.query("SELECT * FROM employee", function (err, res) {
+    let options = connection.query("SELECT * FROM role", function (err, res) {
       if (err) throw err;
 
-      inquirer
-        .prompt([
-          {
-            name: "first_name",
-            message: "What is the employees first name?",
-          },
-          {
-            name: "last_name",
-            message: "What is the employees last name?",
-          },
-          {
-            type: "list",
-            message: "Whats the employees role here?",
-            name: "role_id",
-            choices: options,
-          },
-          {
-            type: "list",
-            message: "Who is this employees Manager?",
-            name: "manager_id",
-            choices: managerOptions,
-          },
-        ])
-        .then((noobie) => {
-          return (
-            connection.query("INSERT INTO employee SET ?", noobie),
-            connection.query(allQuery + ";"),
-            console.log("\n"),
-            console.table(noobie),
-            console.log("\n"),
-            startSearch()
-          );
+      res
+        .map(({ title, id }) => {
+          return {
+            name: title,
+            value: id,
+          };
+        })
+        .then((role) => {
+          return role;
         });
+      connection.query("SELECT * FROM employee", function (err, res) {
+        if (err) throw err;
+
+        inquirer
+          .prompt([
+            {
+              name: "first_name",
+              message: "What is the employees first name?",
+            },
+            {
+              name: "last_name",
+              message: "What is the employees last name?",
+            },
+            {
+              type: "list",
+              message: "Whats the employees role here?",
+              name: "role_id",
+              choices: options,
+            },
+            {
+              type: "list",
+              message: "Who is this employees Manager?",
+              name: "manager_id",
+              choices: managerOptions,
+            },
+          ])
+          .then((noobie) => {
+            return (
+              connection.query("INSERT INTO employee SET ?", noobie),
+              connection.query(allQuery + ";"),
+              console.log("\n"),
+              console.table(noobie),
+              console.log("\n"),
+              startSearch()
+            );
+          });
+      });
     });
   });
 };
@@ -282,7 +278,6 @@ addRole = () => {
 
 addEmployeeDepartment = () => {
   revert();
-  console.log(`HERE WE GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO`);
   inquirer
     .prompt({
       name: "department_name",
