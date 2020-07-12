@@ -178,34 +178,43 @@ addEmployee = () => {
   revert();
   connection.query("SELECT * FROM employee", function (err, res) {
     if (err) throw err;
+
+    // let managerOptions = [1, 2, 3];
+    //console.log("res:", res);
     let managerOptions = res.map(({ id, first_name, last_name }) => ({
       // name: first_name.concat(" ", last_name),
       name: `${first_name} ${last_name}`,
       value: id,
     }));
-    let options = connection.query("SELECT * FROM role", function (err, res) {
+
+    //    console.table(managerOptions);
+
+    //async
+    connection.query("SELECT * FROM role", function (err, res) {
       if (err) throw err;
 
-      res
-        .map(({ title, id }) => {
-          return {
-            name: title,
-            value: id,
-          };
-        })
-        .then((role) => {
-          return role;
-        });
+      var role = res.map(({ title, id }) => {
+        return {
+          name: title,
+          value: id,
+        };
+      });
+      // ).then((role) => {
+      //   console.log(role);
+      //   return role;
+      // });
       connection.query("SELECT * FROM employee", function (err, res) {
         if (err) throw err;
 
         inquirer
           .prompt([
             {
+              type: "input",
               name: "first_name",
               message: "What is the employees first name?",
             },
             {
+              type: "input",
               name: "last_name",
               message: "What is the employees last name?",
             },
@@ -213,7 +222,7 @@ addEmployee = () => {
               type: "list",
               message: "Whats the employees role here?",
               name: "role_id",
-              choices: options,
+              choices: role,
             },
             {
               type: "list",
@@ -223,14 +232,14 @@ addEmployee = () => {
             },
           ])
           .then((noobie) => {
-            return (
-              connection.query("INSERT INTO employee SET ?", noobie),
-              connection.query(allQuery + ";"),
-              console.log("\n"),
-              console.table(noobie),
-              console.log("\n"),
-              startSearch()
-            );
+            console.log(noobie);
+
+            connection.query("INSERT INTO employee SET ?", noobie);
+            startSearch();
+            // connection.query(allQuery + ";"),
+            // console.log("\n"),
+            // console.table(noobie),
+            // console.log("\n")
           });
       });
     });
@@ -272,10 +281,10 @@ addRole = () => {
           if (err) throw err;
           console.log("\n");
           console.table(res);
-          startSearch();
         });
       });
   });
+  startSearch();
 };
 
 addEmployeeDepartment = () => {
