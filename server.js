@@ -232,14 +232,15 @@ addEmployee = () => {
             },
           ])
           .then((noobie) => {
-            console.log(noobie);
+            // console.log(noobie);
 
             connection.query("INSERT INTO employee SET ?", noobie);
+
+            connection.query(allQuery + ";"),
+              console.log("\n"),
+              console.table(noobie),
+              console.log("\n");
             startSearch();
-            // connection.query(allQuery + ";"),
-            // console.log("\n"),
-            // console.table(noobie),
-            // console.log("\n")
           });
       });
     });
