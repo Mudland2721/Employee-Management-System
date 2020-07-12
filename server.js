@@ -162,11 +162,11 @@ employeeByDepartment = () => {
 
 addEmployee = () => {
   revert();
-  connection.query("SELECT * FROM role", function (err, res) {
+  connection.query("SELECT * FROM employee", function (err, res) {
     if (err) throw err;
     //returning object with the data needed needs to be handled there after
 
-    let options = res.map(({ id, title }) => {
+    let options = res.map(({ title, id }) => {
       return {
         name: title,
         value: id,
@@ -174,8 +174,8 @@ addEmployee = () => {
     });
 
     let managerOptions = res.map(({ id, first_name, last_name }) => ({
-      name: first_name,
-      name: last_name,
+      // name: first_name.concat(" ", last_name),
+      name: `${first_name} ${last_name}`,
       value: id,
     }));
 
@@ -208,17 +208,20 @@ addEmployee = () => {
         .then((noobie) => {
           return (
             connection.query("INSERT INTO employee SET ?", noobie),
-            connection.query(allQuery + ";")
-            //UnhandledPromiseRejectionWarning: TypeError: Cannot convert object to primitive value
+            connection.query(allQuery + ";"),
+            console.log("\n"),
+            console.table(noobie),
+            console.log("\n"),
+            startSearch()
           );
-        })
-        .then((role) => {
-          //Show result then reRun
-          console.log("\n");
-          console.table(role);
-          console.log("\n");
-          startSearch();
         });
+      // .then((role) => {
+      //   //Show result then reRun
+      //   console.log("\n");
+      //   console.table(role);
+      //   console.log("\n");
+      //   startSearch();
+      // });
     });
   });
 };
