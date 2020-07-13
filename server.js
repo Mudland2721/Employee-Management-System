@@ -125,13 +125,15 @@ employeeByManager = () => {
           allQuery,
           +"WHERE role.id =?;",
           userManagerId
-        );
+        )
         console.log("\n");
         console.table(employees);
         startSearch();
       });
   });
+  ////////
 };
+
 //function for displaying all employees by department
 employeeByDepartment = () => {
   revert();
@@ -179,17 +181,11 @@ addEmployee = () => {
   connection.query("SELECT * FROM employee", function (err, res) {
     if (err) throw err;
 
-    // let managerOptions = [1, 2, 3];
-    //console.log("res:", res);
     let managerOptions = res.map(({ id, first_name, last_name }) => ({
-      // name: first_name.concat(" ", last_name),
       name: `${first_name} ${last_name}`,
       value: id,
     }));
 
-    //    console.table(managerOptions);
-
-    //async
     connection.query("SELECT * FROM role", function (err, res) {
       if (err) throw err;
 
@@ -199,10 +195,7 @@ addEmployee = () => {
           value: id,
         };
       });
-      // ).then((role) => {
-      //   console.log(role);
-      //   return role;
-      // });
+
       connection.query("SELECT * FROM employee", function (err, res) {
         if (err) throw err;
 
@@ -232,10 +225,7 @@ addEmployee = () => {
             },
           ])
           .then((noobie) => {
-            // console.log(noobie);
-
             connection.query("INSERT INTO employee SET ?", noobie);
-
             connection.query(allQuery + ";"),
               console.log("\n"),
               console.table(noobie),
