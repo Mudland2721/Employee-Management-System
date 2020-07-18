@@ -136,4 +136,4 @@ You are required to submit the following:
 
 © 2019 Trilogy Education Services, a 2U, Inc. brand. All Rights Reserved.
 
-![Employee-Management-System Demo](asset/Gif.gif)
+![Employee-Management-System Demo](assets/Gif.gif)
